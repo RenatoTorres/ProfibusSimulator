@@ -1,0 +1,86 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <Properties>
+    <Property name="name" type="java.lang.String" value="Form" noResource="true"/>
+  </Properties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Component id="jTable1" alignment="0" pref="750" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="jTable1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JTable" name="jTable1">
+      <Properties>
+        <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+          <Table columnCount="20" rowCount="6">
+            <Column editable="true" title="Title 1" type="java.lang.Object"/>
+            <Column editable="true" title="Title 2" type="java.lang.Object"/>
+            <Column editable="true" title="Title 3" type="java.lang.Object"/>
+            <Column editable="true" title="Title 4" type="java.lang.Object"/>
+            <Column editable="true" title="Title 5" type="java.lang.Object"/>
+            <Column editable="true" title="Title 6" type="java.lang.Object"/>
+            <Column editable="true" title="Title 7" type="java.lang.Object"/>
+            <Column editable="true" title="Title 8" type="java.lang.Object"/>
+            <Column editable="true" title="Title 9" type="java.lang.Object"/>
+            <Column editable="true" title="Title 10" type="java.lang.Object"/>
+            <Column editable="true" title="Title 11" type="java.lang.Object"/>
+            <Column editable="true" title="Title 12" type="java.lang.Object"/>
+            <Column editable="true" title="Title 13" type="java.lang.Object"/>
+            <Column editable="true" title="Title 14" type="java.lang.Object"/>
+            <Column editable="true" title="Title 15" type="java.lang.Object"/>
+            <Column editable="true" title="Title 16" type="java.lang.Object"/>
+            <Column editable="true" title="Title 17" type="java.lang.Object"/>
+            <Column editable="true" title="Title 18" type="java.lang.Object"/>
+            <Column editable="true" title="Title 19" type="java.lang.Object"/>
+            <Column editable="true" title="Title 20" type="java.lang.Object"/>
+          </Table>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jTable1" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboBox1">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="7">
+            <StringItem index="0" value="Stations Configured"/>
+            <StringItem index="1" value="Stations in Data Exchange"/>
+            <StringItem index="2" value="Data Size Inputs"/>
+            <StringItem index="3" value="Data Size Outputs"/>
+            <StringItem index="4" value="Bus Time"/>
+            <StringItem index="5" value="Number of Losts"/>
+            <StringItem index="6" value="Communication Errors"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboBox1" noResource="true"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

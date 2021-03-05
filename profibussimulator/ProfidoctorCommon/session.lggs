@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>LiveGraph version 2.0.beta01. GraphSettings.</comment>
+<entry key="HGridSize">1</entry>
+<entry key="VGridSize">0,003</entry>
+<entry key="HGridColour">000000</entry>
+<entry key="XAxisParamValue">1000</entry>
+<entry key="MaxY">6</entry>
+<entry key="MaxX">Auto</entry>
+<entry key="XAxisSeriesIndex">0</entry>
+<entry key="MinY">0</entry>
+<entry key="VGridColour">000000</entry>
+<entry key="MinX">Auto</entry>
+<entry key="XAxisType">XAxis_DataValScaleBySetVal</entry>
+<entry key="VGridType">VGrid_XAUnitAligned</entry>
+<entry key="HGridType">HGrid_None</entry>
+<entry key="HighlightDataPoints">1</entry>
+</properties>

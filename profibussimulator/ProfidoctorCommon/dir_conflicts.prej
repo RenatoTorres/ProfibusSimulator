@@ -1,0 +1,7 @@
+Trying to add new property 'svn:ignore' with value 'dist
+build
+*.xml
+',
+but property already exists with value 'build.xml
+dist
+'.

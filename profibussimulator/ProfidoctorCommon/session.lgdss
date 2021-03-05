@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>LiveGraph version 2.0.beta01. DataSeriesSettings.</comment>
+<entry key="TransformParam.1">1</entry>
+<entry key="TransformParam.0">1</entry>
+<entry key="Show.1">1</entry>
+<entry key="Show.0">0</entry>
+<entry key="DescribedSeriesCount">2</entry>
+<entry key="Colour.1">ff0033</entry>
+<entry key="Colour.0">66ffff</entry>
+<entry key="TransformMode.1">Transform_ScaleBySetVal</entry>
+<entry key="TransformMode.0">Transform_ScaleBySetVal</entry>
+</properties>

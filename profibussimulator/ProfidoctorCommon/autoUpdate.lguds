@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>LiveGraph version 2.0.beta01. Automatic software update settings.</comment>
+<entry key="lastCheckTS">0</entry>
+<entry key="frequency">MANUAL_ONLY</entry>
+</properties>

@@ -1,0 +1,731 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package common.framestructure;
+import common.ConversionsAdvanced;
+import java.util.Calendar;
+import java.util.Date;
+
+/**
+ * Classe para codificação/decodificação de frames Profibus DP/PA.
+ * <br>
+ * O objetivo desta classe é oferecer ao usuário uma interface de criação para
+ * os pacotes Profibus sem a necessidade de conhecer a codificação do protocolo.
+ * Os serviços que podem ser utilizados podem ser encontrados na classe
+ * Services.
+ * <br>
+ * Os codigos presentes ao protocolo estão presentes nas classes SD, Service,
+ * FC e PROTO_TYPE.
+ *
+ *
+ * @author Renato da Veiga Torres
+ * @version 1.0
+ * @see Service
+ * @see FC
+ * @see SD
+ * @see PROTO_TYPE
+ */
+public class ProfibusFrame
+{
+    private byte[]  RawData;
+    private byte[]  Data_Unit;
+    private float[] Samples;
+    private byte SourceAddr;
+    private byte DestAddr;
+    private byte FCByte;
+    private PROTO_TYPE pb_type = PROTO_TYPE.PROFIBUS_DP;
+    private Date TimeStamp;
+    private float msTime;
+    private SD    FrameSD;
+    private Service FrameService;
+    private FC FrameFC;
+    private boolean B6,B5,FCV,FCB;
+    private static final int NUM_SAMPLES_PER_BIT = 5;
+    private static final float SAMPLE_HIGH_LEVEL = 5.1f;
+    private static final float SAMPLE_LOW_LEVEL  = 0.0f;
+
+    /**
+    * Retorna o codigo (protocolo) do tipo do frame (SD).
+    * 
+    * @return SD code of frame (SD1, SD2, SD3, SD4, SC)
+    */
+    private byte getSDType() {
+        return FrameSD.getSD();
+    }
+
+    public void setSDType( byte ucval ) {
+        FrameSD.setSD( ucval );
+        Encode( );
+    }
+
+    /**
+    * Retorna o codigo (protocolo) do tipo do frame (SD).
+    *
+    * @return SD code of frame (SD1, SD2, SD3, SD4, SC)
+    */
+    void setStationType(byte b) {
+        FrameFC.setStationType(b);
+    }
+
+    /**
+    * Retorna o codigo (protocolo) do tipo do frame (SD).
+    *
+    * @return SD code of frame (SD1, SD2, SD3, SD4, SC)
+    */
+    public byte getSD() {
+        return FrameSD.getSD();
+    }
+
+    public FC getFCObject() {
+        return FrameFC;
+    }
+
+    /**
+     * @return the Data_Unit
+     */
+    public byte[] getData_Unit() {
+        return Data_Unit;
+    }
+
+    /**
+     * @param Data_Unit the Data_Unit to set
+     */
+    public void setData_Unit(byte[] du) {
+        Data_Unit = du;
+        Encode( );
+    }
+
+    public static enum PROTO_TYPE { PROFIBUS_DP, PROFIBUS_PA }
+
+    public int getSamplesPerBit() {
+        return NUM_SAMPLES_PER_BIT;
+    }
+
+    protected void init()
+    {
+        FrameSD       = new SD(SD.SD_NULL);
+        FrameService  = new Service(Service.PB_NULL);
+        FrameFC       = new FC(FC.FC_NULL);
+        TimeStamp     = new Date();
+    }
+
+    public ProfibusFrame(int address, int destAddr, byte function_service )
+    {
+        init();
+        AssembleFrame( address, destAddr, function_service);
+    }
+
+    public ProfibusFrame(SD frameSD ) {
+        init( );
+        setSDType(frameSD.getSD());
+    }
+
+    public void Update( )
+    {
+        AssembleFrame( getSourceAddr(), getDestAddr(), FrameService.getService());
+    }
+
+    public ProfibusFrame( String framedata )
+    {
+        init();
+        Decode( ConversionsAdvanced.hexStringToByteArray( framedata ) );
+        setTimeStamp( Calendar.getInstance().getTime() );
+    }
+
+    public ProfibusFrame( byte[] byteframedata )
+    {
+        this( ConversionsAdvanced.toStringFromStream( byteframedata ) );
+    }
+
+
+    /**
+     * @return the FrameType
+     */
+    public SD getFrameType() {
+        return FrameSD;
+    }
+
+    /**
+     * @return the FrameService
+     */
+    public byte getFrameFC() {
+        return FrameFC.getFC();
+    }
+
+    /**
+     * @return the FrameService
+     */
+    public String getFrameFCString() {
+        return FrameFC.toString();
+    }
+
+
+    /**
+     * @return the FrameService
+     */
+    public byte getFrameService() {
+        return FrameService.getService();
+    }
+
+    public String getFrameServiceString() {
+        return FrameService.toString();
+    }
+
+
+    /**
+     * @param FrameService the FrameService to set
+     */
+    public void setFrameFunction(Service FrameFunction) {
+        this.FrameService = FrameFunction;
+    }
+
+    /**
+     * @return the IsReq
+     */
+    public boolean IsReq() {
+        return FrameFC.IsReq( );
+    }
+
+    public void Encode( )
+    {
+        Encode( this );
+    }
+
+    public void Encode( ProfibusFrame pf )
+    {
+        int fsize, aux=0;
+        switch( pf.getSDType() )
+        {
+            case SD.SD1:
+                //10 dest source FCByte <checksum> <0x16h>
+                fsize = 6;
+                aux = 0;
+                RawData = new byte[fsize];
+                RawData[aux++] = (byte) SD.SD1;
+                RawData[aux++] = DestAddr;
+                RawData[aux++] = SourceAddr;
+
+//                if( IsReq() == true )
+//                {
+//                    FCByte |= 0x40;
+//                    FCByte |= ( FCB == true ) ? 0x20 : 0x00;
+//                    FCByte |= ( FCV == true ) ? 0x10 : 0x00;
+//                }
+//                else
+//                {
+//                    FCByte |= ( B6 == true ) ? 0x20 : 0x00;
+//                    FCByte |= ( B5 == true ) ? 0x10 : 0x00;
+//                }
+
+//                RawData[aux++] = (byte) (FCByte & 0x7F);
+                  RawData[aux++] = FrameFC.EncodeFC( );
+
+                if( pb_type == PROTO_TYPE.PROFIBUS_DP )
+                {
+                    //CheckSum + End Delimiter (0x16)
+                    RawData[aux++] = CheckSumDP(RawData, aux );
+                    RawData[aux++] = 0x16;
+                }
+                else
+                {
+                    //CheckSum => CRC16
+
+                }
+                break;
+
+            case SD.SD2:
+                //68 size size 68 dest source FCByte <data> <checksum> <0x16h>
+                byte tmpData[] = new byte[255];
+                
+                tmpData[aux++] = SD.SD2;
+                tmpData[aux++] = 0;  //will be filled at end
+                tmpData[aux++] = 0;
+                tmpData[aux++] = SD.SD2;
+
+                if( isIsSAP() == true )
+                {
+                    tmpData[aux++] = (byte) (DestAddr   | 0x80);
+                    tmpData[aux++] = (byte) (SourceAddr | 0x80);
+                    tmpData[aux++] = FrameFC.EncodeFC( );
+                    tmpData[aux++] = FrameService.getDSAP();
+                    tmpData[aux++] = FrameService.getSSAP();
+                }
+                else
+                {
+                    tmpData[aux++] = DestAddr;
+                    tmpData[aux++] = SourceAddr;
+                    tmpData[aux++] = FrameFC.EncodeFC( );
+                }
+
+                if( Data_Unit != null ) {
+                    for(int i=0; i < Data_Unit.length; i++ )
+                    {
+                        tmpData[aux++] = Data_Unit[ i ];
+                    }
+                }
+                
+                tmpData[ 1 ] = (byte) (aux - 4);    //Length computation
+                tmpData[ 2 ] = tmpData[ 1 ];
+
+                if( pb_type == PROTO_TYPE.PROFIBUS_DP )
+                {
+                    //CheckSum + End Delimiter (0x16)
+                    tmpData[aux++] = CheckSumDP( tmpData, aux );
+                    tmpData[aux++] = 0x16;
+                }
+                else
+                {
+                    //CheckSum => CRC16
+
+                }
+
+                //Copy to RawData with correct size
+                RawData = new byte[aux];
+                System.arraycopy(tmpData, 0, RawData, 0, aux);
+
+                break;
+            case SD.SD3:
+                break;
+
+            case SD.SD4:
+                //DC dest source
+                fsize = 3;
+                aux = 0;
+                RawData = new byte[fsize];
+                RawData[aux++] = SD.SD4;
+                RawData[aux++] = DestAddr;
+                RawData[aux++] = SourceAddr;
+
+                if( pb_type != PROTO_TYPE.PROFIBUS_DP )
+                {
+                    //CheckSum => CRC16
+                    //TODO: ADAPTAR PARA O TOKEN PARA PROFIBUS PA - FUTURO!
+                }
+                break;
+
+            case SD.SC:
+                RawData = new byte[1];
+                RawData[aux++] = SD.SC;
+                
+                if( pb_type != PROTO_TYPE.PROFIBUS_DP )
+                {
+                    //CheckSum => CRC16
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    int Decode( byte[] inputFrame )
+    {
+        int iret = 0;
+        int inputSize = inputFrame.length;
+
+        //Discard invalid sizes
+        if( inputSize < 1 ) {
+            return -1;
+        }
+
+        setRawData( inputFrame );
+
+        //Decoding Frame Type
+        byte sdtype =  (byte) inputFrame[0];
+
+        BuildSignalSamples( inputFrame, 3 );
+
+        switch( sdtype )
+        {
+            case SD.SC:      //short answer
+                FrameSD.setSD( SD.SC );
+                FrameService.setFfunction(Service.PB_NULL);
+                break;
+
+            case SD.SD1:      //fixed frame size 10 xy zw kf
+                FrameSD.setSD( SD.SD1 );
+                setDestAddr( inputFrame[1] );
+                setSourceAddr(  inputFrame[2] );
+                
+                //Verify between data_exchange_without_outputs and request/response_fdl_status
+                //Use FCByte to do this
+                FrameFC.DecodeFC( inputFrame[3] );
+
+                switch( FrameFC.getFC() )
+                {
+                    case FC.FC_REQ_FDL_STATUS_WITH_REPLY:
+                        //Request FDL Status
+                        FrameService.setFfunction(Service.PB_REQ_FDL_STATUS);
+                        break;
+
+                    case FC.FC_RES_FDL_HIGH:
+                    case FC.FC_RES_FDL_LOW:
+                    case FC.FC_NULL:
+                        //Request FDL Status
+                        FrameService.setFfunction(Service.PB_RES_FDL_STATUS);
+                        break;
+
+                    case FC.FC_REQ_SEND_DATA_HIGH:
+                        //Data Exchange Request
+                        FrameService.setFfunction( Service.PB_REQ_DATA_EXCHANGE_ONLY_INPUTS);
+                        break;
+                }
+               
+                break;
+
+
+            case SD.SD2:      //variable frame size 68 xy xy 68 DA SA DSAP SSAP....
+                FrameSD.setSD(SD.SD2);
+                setDestAddr(   (byte)(inputFrame[4] & 0x7F) );
+                setSourceAddr( (byte)(inputFrame[5] & 0x7F) );
+
+                if( (inputFrame[4] & 0x80) != 0 )
+                {
+                    //SAP Found
+                    FrameService.setFfunction( inputFrame[7], inputFrame[8] );
+                }
+
+                //Get FCByte Byte
+                FrameFC.DecodeFC( inputFrame[6] );
+                break;
+
+            case SD.SD4:      //token pass DC xy zw
+                FrameSD.setSD(SD.SD4);
+                setDestAddr(   inputFrame[1] );
+                setSourceAddr( inputFrame[2] );
+                FrameService.setFfunction( Service.PB_REQ_TOKEN_PASS );
+                break;
+
+            default:
+                break;
+        }
+        return iret;
+    }
+
+    /**
+     * @return the RawData
+     */
+    public byte[] getRawData() {
+        return RawData;
+    }
+
+    /**
+     * @return the RawData
+     */
+    public byte getRawData(int i) {
+        return RawData[i];
+    }
+
+    public String toString( )
+    {
+        return ConversionsAdvanced.toStringFromStream( RawData );
+    }
+
+    public String getDirection( )
+    {
+        if( IsReq() == true )
+            return "Request";
+        else
+            return "Response";
+    }
+
+    /**
+     * @param RawData the RawData to set
+     */
+    public void setRawData(byte[] RawData) {
+        this.RawData = RawData;
+    }
+
+    /**
+     * @return the LevelSamples
+     */
+    public float[] getLevelSamples() {
+        return Samples;
+    }
+
+    /**
+     * @param LevelSamples the LevelSamples to set
+     */
+    public void setLevelSamples(float[] LevelSamples) {
+        this.Samples = LevelSamples;
+    }
+
+    /**
+     * @return the SourceAddr
+     */
+    public int getSourceAddr() {
+        return SourceAddr;
+    }
+
+    /**
+     * @param SourceAddr the SourceAddr to set
+     */
+    public void setSourceAddr(byte SourceAddr) {
+        this.SourceAddr = SourceAddr;
+    }
+
+    /**
+     * @return the DestAddr
+     */
+    public int getDestAddr() {
+        return DestAddr;
+    }
+
+    /**
+     * @param DestAddr the DestAddr to set
+     */
+    public void setDestAddr(byte DestAddr) {
+        this.DestAddr = DestAddr;
+    }
+
+    /**
+     * @return the TimeStamp
+     */
+    public Date getTimeStamp() {
+        return TimeStamp;
+    }
+
+    public long getMsTimeStamp() {
+        return TimeStamp.getTime();
+    }
+
+    public float getMsFrameTime( ) {
+        return msTime;
+    }
+
+    public float getUsFrameTime( ) {
+        return msTime*1000;
+    }
+
+    public void setTimeFrame( float ts ) {
+        msTime = ts;
+    }
+
+
+    /**
+     * @param TimeStamp the TimeStamp to set
+     */
+    public void setTimeStamp(Date TimeStamp) {
+        this.TimeStamp = TimeStamp;
+    }
+
+    /**
+     * @return the IsSAP
+     */
+    public boolean isIsSAP() {
+        return FrameService.isSAPFound();
+    }
+
+    /**
+     * @return the SourceSAP
+     */
+    public int getSourceSAP() {
+        return FrameService.getSSAP();
+    }
+
+    /**
+     * @param SourceSAP the SourceSAP to set
+     */
+    public void setSourceSAP(byte SourceSAP) {
+        FrameService.setSSAP( SourceSAP );
+    }
+
+    /**
+     * @return the DestSAP
+     */
+    public int getDestSAP() {
+        return FrameService.getDSAP();
+    }
+
+
+    /**
+     * @param DestSAP the DestSAP to set
+     */
+    public void setDestSAP(byte DestSAP) {
+        FrameService.setDSAP( DestSAP );
+    }
+
+    public byte getFC( )
+    {
+        return FCByte;
+    }
+
+    public byte CheckSumDP(byte ab[], int datalength )
+    {
+        int sum = 0;
+
+        switch( FrameSD.getSD() )
+        {
+            case SD.SD1:
+                //10 dest source FCByte <checksum>
+                for(int i=1; (i < 4) && (i < datalength); i++)
+                    sum += ConversionsAdvanced.ByteToUnsignedInt( ab[i] );
+                break;
+
+            case SD.SD2:
+                //68 size size 68 dest source FCByte <data> <checksum>
+                for(int i=4; (i < (ab[1]+4)) && (i < datalength); i++)
+                    sum += ConversionsAdvanced.ByteToUnsignedInt( ab[i] );
+
+                break;
+                
+            default:
+                break;
+        }
+
+        //Short to one byte
+        sum = sum % 256;
+
+        return (byte) sum;
+    }
+
+    public int getNumSignalSamples( byte rawdata[] )
+    {
+        return rawdata.length*8*NUM_SAMPLES_PER_BIT;
+    }
+
+    public float[] BuildSignalSamples( byte rawdata[] )
+    {
+        return BuildSignalSamples( rawdata, rawdata.length );
+    }
+
+    public float[] BuildSignalSamples( byte rawdata[], int numbytes )
+    {
+        byte aux, bitsample;
+        int isize = rawdata.length;
+        int i,j,k,s,t;
+
+        if( isize <= 0 )
+            return null;
+
+        if( isize > numbytes )
+            isize = numbytes;
+
+        Samples = new float[ isize*8*NUM_SAMPLES_PER_BIT ];
+        
+        for(i=0; i < isize; i++)
+        {
+            //aux extrai cada byte do frame
+            aux = rawdata[ i ];
+            s = 8*i*NUM_SAMPLES_PER_BIT;
+
+            for(j=0; j < 8; j++)
+            {
+                //bit sample amostra o bit do mais signifcativo para o menos
+                bitsample = (byte) ( aux & (0x80 >> j) );
+                t = s + j*NUM_SAMPLES_PER_BIT;
+
+                for(k = 0; k < NUM_SAMPLES_PER_BIT; k++)
+                {
+                    Samples[ t + k ] = (bitsample != 0) ? SAMPLE_HIGH_LEVEL : SAMPLE_LOW_LEVEL;
+                }
+
+                //FALTA INCLUIR A PARIDADE E STOPBIT
+            }
+        }
+        return Samples;
+    }
+
+    public int getRawSize( ) {
+        if( RawData != null )
+            return RawData.length;
+        else
+            return 1;
+    }
+
+    private void AssembleFrame(int address, int destAddr, byte function_service) {
+        setSourceAddr( (byte) address );
+        setDestAddr( (byte) destAddr );
+        FrameService.setFfunction(function_service);
+
+        switch( FrameService.getService() ) {
+            case Service.PB_REQ_TOKEN_PASS:
+                FrameSD.setSD(SD.SD4);
+                break;
+
+            case Service.PB_REQ_FDL_STATUS:
+            case Service.PB_RES_FDL_STATUS:
+            case Service.PB_REQ_DATA_EXCHANGE_ONLY_INPUTS:
+                FrameSD.setSD(SD.SD1);
+            break;
+
+            case Service.PB_REQ_DATA_EXCHANGE:
+            case Service.PB_RES_DATA_EXCHANGE:
+            case Service.PB_REQ_RD_INPUTS:
+            case Service.PB_RES_RD_INPUTS:
+            case Service.PB_REQ_RD_OUTPUTS:
+            case Service.PB_RES_RD_OUTPUTS:
+            case Service.PB_REQ_SET_PRM:
+            case Service.PB_REQ_CHK_CFG:
+            case Service.PB_REQ_GET_CFG:
+            case Service.PB_RES_GET_CFG:
+            case Service.PB_REQ_GET_DIAG:
+            case Service.PB_RES_GET_DIAG:
+                FrameSD.setSD(SD.SD2);
+            break;
+
+            case Service.PB_RES_SET_PRM:
+            case Service.PB_RES_CHK_CFG:
+            case Service.PB_RES_DATA_EXCHANGE_ONLY_OUTPUTS:
+            case Service.PB_RES_RD_INPUTS_EMPTY:
+            case Service.PB_RES_RD_OUTPUTS_EMPTY:
+                FrameSD.setSD(SD.SC);
+        }
+
+        switch( FrameService.getService() ) {
+            case Service.PB_REQ_TOKEN_PASS:
+                FrameFC.setFC( FC.FC_NULL);
+                break;
+
+            case Service.PB_REQ_FDL_STATUS:
+                FrameFC.setFC( FC.FC_REQ_FDL_STATUS_WITH_REPLY);
+                break;
+
+            case Service.PB_REQ_DATA_EXCHANGE_ONLY_INPUTS:
+            case Service.PB_REQ_DATA_EXCHANGE:
+            case Service.PB_REQ_RD_INPUTS:
+            case Service.PB_REQ_RD_OUTPUTS:
+            case Service.PB_REQ_SET_PRM:
+            case Service.PB_REQ_CHK_CFG:
+            case Service.PB_REQ_GET_CFG:
+            case Service.PB_REQ_GET_DIAG:
+                FrameFC.setFC( FC.FC_REQ_SEND_DATA_HIGH );
+                break;
+
+            case Service.PB_RES_FDL_STATUS:
+                FrameFC.setFC( FC.FC_NULL);
+                break;
+
+            case Service.PB_RES_DATA_EXCHANGE:
+            case Service.PB_RES_RD_INPUTS:
+            case Service.PB_RES_RD_OUTPUTS:
+            case Service.PB_RES_GET_CFG:
+            case Service.PB_RES_GET_DIAG:
+            case Service.PB_RES_SET_PRM:
+            case Service.PB_RES_CHK_CFG:
+            case Service.PB_RES_DATA_EXCHANGE_ONLY_OUTPUTS:
+            case Service.PB_RES_RD_INPUTS_EMPTY:
+            case Service.PB_RES_RD_OUTPUTS_EMPTY:
+                FrameFC.setFC( FC.FC_RES_FDL_HIGH );
+                break;
+        }
+
+        Encode( );
+    }
+
+    public int getNumBits( ) {
+        //Return size* 11Tbit
+        //No time between bytes
+        return 11*(getRawSize());
+    }
+
+    public boolean IsToken( ) {
+        if( this.getFrameService() == Service.PB_REQ_TOKEN_PASS )
+            return true;
+        else
+            return false;
+    }
+
+}

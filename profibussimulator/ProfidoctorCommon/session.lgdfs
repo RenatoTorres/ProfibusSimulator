@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>LiveGraph version 2.0.beta01. DataFileSettings.</comment>
+<entry key="ShowOnlyTailData">0</entry>
+<entry key="DataFile">C:\Users\Renato Veiga\Desktop\Dissertacao_full\profibussimulator\ProfidoctorCommon\FRAME_SAMPLES.lgdat</entry>
+<entry key="UpdateFrequency">-1</entry>
+<entry key="DoNotCacheData">0</entry>
+</properties>
