@@ -23,10 +23,13 @@ public class PBFile
     public PBFile(String filename)
     {
         try {
-            String url = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=";
-            Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+            //String url = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=";
+            //Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
             //File f = new File(filename);
-            connection = DriverManager.getConnection(url + filename, "anonymous" /*username*/, "guest" /*password*/);
+            //connection = DriverManager.getConnection(url + filename, "anonymous" /*username*/, "guest" /*password*/);
+            Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
+            String url = "jdbc:ucanaccess://";
+            connection = DriverManager.getConnection(url + filename);
 
             ReadMDBFile();
             

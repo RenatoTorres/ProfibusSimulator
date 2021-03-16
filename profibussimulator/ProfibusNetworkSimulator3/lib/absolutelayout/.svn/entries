@@ -1,0 +1,42 @@
+10
+
+dir
+0
+https://free1.projectlocker.com/emossin/PROFIDOCTOR/svn/ProfibusNetworkSimulator3/lib/absolutelayout
+https://free1.projectlocker.com/emossin/PROFIDOCTOR/svn
+add
+
+
+
+
+
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+ea6be919-867e-4ee2-b185-f73ec84817de
+
+AbsoluteLayout.jar
+file
+
+
+
+add
+
+
+
+
+
+has-props
+has-prop-mods
+
